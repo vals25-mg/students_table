@@ -1,0 +1,10 @@
+src\main\java\com\exemple\model\Eleve.java
+src\main\java\com\exemple\model\AnneeScolaire.java
+src\main\java\com\exemple\model\Filiere.java
+src\main\java\com\exemple\model\Inscription.java
+src\main\java\com\exemple\model\VInscription.java
+src\main\java\com\exemple\util\DBConnection.java
+src\main\java\com\exemple\ejb\MonServiceEJB.java
+src\main\java\com\exemple\ejb\InscriptionService.java
+src\main\java\com\exemple\web\IndexServlet.java
+src\main\java\com\exemple\web\MonServlet.java
