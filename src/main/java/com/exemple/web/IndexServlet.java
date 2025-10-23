@@ -24,8 +24,8 @@ public class IndexServlet extends HttpServlet {
             List<VInscription> resultats = service.getClassements();
             req.setAttribute("resultats", resultats);
 
-            VInscription major = service.getMajorDesMajors();
-            req.setAttribute("major", major);
+             List<VInscription> majors = service.getMajorDesMajors();
+            req.setAttribute("majors", majors);
         } catch (Exception e) {
             e.printStackTrace();
             req.setAttribute("erreur", e.getMessage());

@@ -45,15 +45,21 @@ public class InscriptionService {
         return list;
     }
 
-    public VInscription getMajorDesMajors() throws SQLException {
-        VInscription major = null;
+    public List<VInscription> getMajorDesMajors() throws SQLException {
+        List<VInscription> majors = new ArrayList<>();
         String sql = """
+            WITH ranked_inscriptions AS (
+                SELECT id, id_eleve, nom, redoublement, id_filiere, filiere_nom, 
+                       annee_debut, annee_fin, moyenne,
+                       RANK() OVER (
+                           ORDER BY moyenne DESC, redoublement ASC
+                       ) AS rank
+                FROM v_inscriptions
+            )
             SELECT id, id_eleve, nom, redoublement, id_filiere, filiere_nom, 
                    annee_debut, annee_fin, moyenne
-            FROM v_inscriptions
-            WHERE moyenne = (SELECT MAX(moyenne) FROM v_inscriptions)
-            ORDER BY annee_debut DESC
-            LIMIT 1
+            FROM ranked_inscriptions
+            WHERE rank = 1 
         """;
 
         try (Connection conn = ds.getConnection();
@@ -61,8 +67,8 @@ public class InscriptionService {
              ResultSet rs = ps.executeQuery()) {
             
             System.out.println(" Recherche MAJOR DES MAJORS...");
-            if (rs.next()) {
-                major = new VInscription();
+            while (rs.next()) {
+                VInscription major = new VInscription();
                 major.setId(rs.getInt("id"));
                 major.setIdEleve(rs.getString("id_eleve"));
                 major.setNom(rs.getString("nom"));
@@ -72,11 +78,14 @@ public class InscriptionService {
                 major.setAnneeDebut(rs.getInt("annee_debut"));
                 major.setAnneeFin(rs.getInt("annee_fin"));
                 major.setMoyenne(rs.getDouble("moyenne"));
-                System.out.println(" MAJOR TROUVÉ: " + major.getNom() + " - Moyenne: " + major.getMoyenne());
-            } else {
-                System.out.println(" Aucun major trouvé !");
+                majors.add(major);
+                System.out.println("MAJOR TROUVÉ: " + major.getNom() + " - Moyenne: " + major.getMoyenne());
+            }
+            if (majors.isEmpty()) {
+                System.out.println("Aucun major trouvé !");
             }
         }
-        return major;
+        return majors;
     }
+
 }
